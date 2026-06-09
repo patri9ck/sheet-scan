@@ -40,7 +40,7 @@ def main():
 
     show_image(hough, "hough")
 
-    closed = cv2.morphologyEx(hough, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (50, 50)))
+    closed = cv2.morphologyEx(hough, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)))
 
     show_image(closed, "closed")
 
