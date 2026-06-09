@@ -9,7 +9,7 @@ import numpy as np
 
 
 def main():
-    image_path = "../data/PXL_20260527_093456545.jpg"
+    image_path = "../data/PXL_20260527_093654592.jpg"
 
     original = cv2.imread(image_path)
 
@@ -40,10 +40,57 @@ def main():
 
     show_image(hough, "hough")
 
-    closed = cv2.morphologyEx(hough, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)))
+    if np.sum(hough == 255) / hough.size > 0.4:
+        hough = cv2.bitwise_not(hough)
 
-    show_image(closed, "closed")
+        show_image(hough, "inverted")
 
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(hough, connectivity=8, ltype=cv2.CV_32S)
+
+    height, width = hough.shape
+
+    largest_label = -1
+    largest_area = 0
+
+    for label in range(1, num_labels):
+        x = stats[label, cv2.CC_STAT_LEFT]
+        y = stats[label, cv2.CC_STAT_TOP]
+        bw = stats[label, cv2.CC_STAT_WIDTH]
+        bh = stats[label, cv2.CC_STAT_HEIGHT]
+
+        if x <= 0 or y <= 0 or (x + bw) >= width or (y + bh) >= height:
+            continue
+
+        area = stats[label, cv2.CC_STAT_AREA]
+
+        if area > largest_area:
+            largest_area = area
+            largest_label = label
+
+    filtered = np.zeros_like(hough)
+
+    if largest_label != -1:
+        filtered[labels == largest_label] = 255
+
+    show_image(filtered, "filtered")
+
+    points = np.column_stack(np.where(filtered == 255))[:, ::-1]  # (y,x) → (x,y)
+
+    rect = cv2.minAreaRect(points)
+    box = cv2.boxPoints(rect).astype(np.int32)
+
+    filled = np.zeros_like(filtered)
+
+    cv2.fillPoly(filled, [box], color=255)
+
+    show_image(filled, "filled")
+
+    masked = cv2.bitwise_and(gray, gray, mask=filled)
+
+    x, y, w, h = cv2.boundingRect(box)
+    cropped = masked[y:y + h, x:x + w]
+
+    show_image(cropped, "cropped")
 
 
 main()
