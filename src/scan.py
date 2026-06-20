@@ -9,7 +9,7 @@ import numpy as np
 
 
 def main():
-    image_path = "../data/PXL_20260527_093654592.jpg"
+    image_path = "../data/PXL_20260527_093452881.jpg"
 
     original = cv2.imread(image_path)
 
@@ -85,12 +85,25 @@ def main():
 
     show_image(filled, "filled")
 
-    masked = cv2.bitwise_and(gray, gray, mask=filled)
+    masked = cv2.bitwise_and(blurred, blurred, mask=filled)
 
     x, y, w, h = cv2.boundingRect(box)
     cropped = masked[y:y + h, x:x + w]
 
     show_image(cropped, "cropped")
+
+    f_transform = np.fft.fft2(cropped)
+    f_shift = np.fft.fftshift(f_transform)
+
+    magnitude_spectrum = 20 * np.log(np.abs(f_shift) + 1)
+
+    show_image(magnitude_spectrum, "magnitude_spectrum")
+
+    magnitude_scaled = cv2.normalize(magnitude_spectrum, magnitude_spectrum, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+    show_image(magnitude_scaled, "magnitude_scaled")
+
+    _, thresh = cv2.threshold(magnitude_scaled, 160, 255, cv2.THRESH_BINARY)
 
 
 main()
