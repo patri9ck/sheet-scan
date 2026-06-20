@@ -24,7 +24,6 @@ def show_image(image, title, show):
         plt.savefig("results/" + title + ".png")
 
 
-
 def main():
     parser = argparse.ArgumentParser(description="Document segmentation and rotation")
 
