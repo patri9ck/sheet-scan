@@ -1,5 +1,6 @@
 import argparse
 import os
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -30,13 +31,14 @@ def main():
     parser.add_argument(
         "--image",
         type=str,
-        required=True,
+        default=f"{Path(__file__).resolve().parent.parent}/data/PXL_20260620_100524356.jpg",
         help="Input image"
     )
 
     parser.add_argument(
         "--show",
         action="store_true",
+        default=True,
         help="Show images"
     )
 
