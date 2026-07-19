@@ -31,7 +31,7 @@ def main():
     parser.add_argument(
         "--image",
         type=str,
-        default=f"{Path(__file__).resolve().parent.parent}/data/PXL_20260620_100524356.jpg",
+        default=f"{Path(__file__).resolve().parent.parent}/data/PXL_20260527_093540818.jpg",
         help="Input image"
     )
 
@@ -62,7 +62,7 @@ def main():
 
     inverted = False
 
-    if np.sum(dilated == 255) / dilated.size > 0.4:
+    if np.sum(dilated == 255) / dilated.size > 0.6:
         dilated = cv2.bitwise_not(dilated)
 
         inverted = True
